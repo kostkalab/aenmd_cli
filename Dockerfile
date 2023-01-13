@@ -33,5 +33,5 @@ RUN groupadd -g 10013 aenmd && \
     chown -R aenmd:aenmd /aenmd
 USER aenmd:aenmd
 
-ENTRYPOINT ["/aenmd/aenmd_cli.R"]
+CMD ["/aenmd/aenmd_cli.R"]
 
