@@ -118,7 +118,8 @@ if ( clargs$verbose ) {
 } 
 #- aggregate result by variant (i.e., over transcripts)
 #------------------------------------------------------
-tmp1 <- apply(opt$res_aenmd, 1, function(x) paste(as.integer(x), collapse = ":"))
+rcol <- c("is_ptc", "is_last", "is_penultimate", "is_cssProximal", "is_single", "is_407plus")
+tmp1 <- apply(opt$res_aenmd[,rcol], 1, function(x) paste(as.integer(x), collapse = ":"))
 tmp2 <- paste(opt$tx_id,tmp1, sep = "|")
 res  <- tapply(tmp2, opt$key, function(x) paste(x, collapse=","))
 
@@ -143,6 +144,10 @@ tmp <- VariantAnnotation::header(vcf_out)
 hdr_ifo <- tmp |> VariantAnnotation::info() |> as.data.frame()
 desc <- paste(v3, "transcript_id",paste0(opt$res_aenmd |> colnames(), collapse = ":"),sep="|")
 hdr_ifo <- rbind(hdr_ifo,c(".", "String", desc))
+#- had no info in vcf that was provided
+if(nrow(hdr_ifo)==1){
+    colnames(hdr_ifo) <- c("Number","Type","Description")
+}
 rownames(hdr_ifo)[dim(hdr_ifo)[1]] <- 'aenmd'
 VariantAnnotation::info(tmp) <- hdr_ifo |> S4Vectors::DataFrame()
 VariantAnnotation::header(vcf_out) <- tmp

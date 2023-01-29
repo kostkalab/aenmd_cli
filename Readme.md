@@ -47,11 +47,13 @@ $ docker run                                                                    
 #### -Note: Memory can be an issue. 
 Eespecially when running docker/podman/etc. inside a virtual machine (e.g., on a Mac using `podman` [(see here)](https://podman.io/getting-started/installation)). Below is an example how to increase memory size available to podman. 
 ```
+#-
 $ podman machine stop
 $ podman machine inspect | grep Memory
 $ podman machine set -m=8192
 $ podman machine inspect | grep Memory
 $ podman machine start
+
 ```
 
 #### -Note: Passing input/output files can be un-intuitive.

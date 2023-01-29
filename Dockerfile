@@ -18,14 +18,18 @@ RUN R -e 'BiocManager::install("dplyr")'    	 			        && \
     R -e 'BiocManager::install("BSgenome.Hsapiens.NCBI.GRCh38")' 	&& \
     R -e 'BiocManager::install("BSgenome.Hsapiens.UCSC.hg19")'
 
-#- get cli script
-COPY . /aenmd
+#- get local files
+RUN mkdir -p /aenmd/dat
+RUN mkdir -p /aenmd/src
+COPY ./dat/* /aenmd/dat
+COPY ./src/* /aenmd/src
 
+#-  install aenmd
 RUN R -e 'BiocManager::install("here")' && \
     R -e 'BiocManager::install("AnnotationFilter")' && \
     R -e 'BiocManager::install("argparse")' && \
-    R -e 'install.packages("/aenmd/aenmd.data.ensdb.v105_0.2.2.tar.gz")' && \
-    R -e 'install.packages("/aenmd/aenmd_0.2.15.tar.gz")' 
+    R -e 'install.packages("/aenmd/dat/aenmd.data.ensdb.v105_0.2.2.tar.gz")' && \
+    R -e 'install.packages("/aenmd/dat/aenmd_0.2.15.tar.gz")' 
 
 #- switch to non-root user
 RUN groupadd -g 10013 aenmd && \
@@ -33,5 +37,5 @@ RUN groupadd -g 10013 aenmd && \
     chown -R aenmd:aenmd /aenmd
 USER aenmd:aenmd
 
-CMD ["/aenmd/aenmd_cli.R"]
+ENTRYPOINT ["/aenmd/src/aenmd_cli.R"]
 
