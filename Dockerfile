@@ -36,17 +36,17 @@ RUN R -e 'BiocManager::install("here")'                     && \
     R -e 'install.packages("/aenmd/dat/'$aenmd_pack'")'     && \
     rm /aenmd/dat/$aenmd_dat_pack /aenmd/dat/$aenmd_pack    #- dont need them any more
 
+#- clean-up
+RUN apt-get clean               && \
+    apt-get autoremove -y       && \
+    apt-get autoclean -y        && \
+    rm -rf /var/lib/apt/lists/*
+
 #- switch to non-root user
 RUN groupadd -g 10013 aenmd && \
     useradd -m -u 10017 -g aenmd aenmd && \
     chown -R aenmd:aenmd /aenmd
 USER aenmd:aenmd
-
-#- clean-up'## clean up
-apt-get clean
-apt-get autoremove -y
-apt-get autoclean -y
-rm -rf /var/lib/apt/lists/*
 
 ENTRYPOINT ["/aenmd/src/aenmd_cli.R"]
 
