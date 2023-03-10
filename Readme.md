@@ -1,37 +1,109 @@
-## `aenmd_cli` Annotating escape from nonsense-mediated decay
 
-This repository contains a simple **command line interface** for the `aenmd` **R package** available [at this repository](), so that annotation of human genetic variant with (predicted) escape from nonsense-mediated decay can be run without interacting with the  `R programming language`. We also provide a Dockerfile (and image) for ease of use.
+## aenmd_cli
 
-### Quickstart with docker
-```
+### Command line interface for the aenmd R package
+
+- [Introduction](#introduction)
+- [Quickstart with docker](#quickstart-with-docker)
+- [Using the CLI without docker](#running-aenmd_cli-without-docker)
+- [Notes]()
+    - A
+    - B
+#### Introduction
+
+This repository contains a simple command line interface (CLI) for the `aenmd` `R` package available [at this repository](https://github.com/kostkalab/aenmd). `aenmd` annotates variant/transcript pairs with premature termination codons with predicted escape from nonsense-mediated decay.
+
+With the CLI this can be done  without interacting with the  `R programming language` directly, and `aenmd` can be integrated into processing workflows more easily. We also provide a Dockerfile (and image).
+
+#### Quickstart with docker / podman
+
+Here we assume access to docker is configured and a vcf file `/my/input/file.vcf` is to be analyzed using `aenmd`. Output is to be written to `/my/output/file.vcf`.
+
+```bash
 #- get set up
-$ git clone kostkalab/aenmd_cli
-$ docker pull kostkalab/aenmd_cli
+git clone kostkalab/aenmd_cli
+docker pull kostkalab/aenmd_cli
 
 #- run aenmd_cli via shell script
-$ cd aenmd_cli
-$ ./docker_aenmd_cli.sh -i /my/input/file.vcf -o /my/output/file.vcf
+cd aenmd_cli
+./src/run_aenmd_cli.sh -i /my/input/file.vcf -o /my/output/file.vcf
+```
+Since we are using docker, we only need one script from the repository.
+We can clean up the rest.
 
+```bash
 #- we actually only need the shell script from the github repository
-$ cp docker_aenmd_cli.sh ~ && cd ..
-$ rm -rf aenmd_cli
-$ cd 
-$ ./docker_aenmd_cli.sh -i /my/input/file.vcf -o /my/output/file.vcf
+cp ./src/run_aenmd_cli.sh ~ && cd .. #- copy to where scripts are kept
+rm -rf aenmd_cli
+cd 
+./run_aenmd_cli.sh -i /my/input/file.vcf -o /my/output/file.vcf
 ```
 
-What if I want to use `podman`?
+Podman is also an option
 
+```bash
+#- use podman instead of docker
+./run_aenmd_cli.sh -p -i /my/input/file.vcf -o /my/output/file.vcf
+#- get help
+./run_aenmd_cli.sh -h
+# 
+# Runs aenmd_cli inside a docker container.
+# Short option are for interacting with this script, related to passing 
+# input/output to aenmd_cli.R. Actual options to aenmd_cli.R are long options:
+# 
+# -b PATH    don't use docker, use existing aenmd installation. PATH points 
+#            to the directory containig the aenmd_cli.R script.
+# -p         use podman instead of docker
+# -i FILE    input file. If -I is given, relative to the directory given there
+# -I DIR     if podman/docker run inside a VM, directory in the VM where
+#            input file is located
+# -o FILE    output file. If -O given, relative to the directory given there
+# -O DIR     if podman/docker run inside a VM, directory in the VM where
+#            output file is located
+# -v         print progress
+# -5 NUM     Distance (in bp) for CSS-proximal NMD escape rule (5' rule).
+#            That is, PTCs within NUM bp downstream of the CSS (5' boundary) 
+#            are predicted to escape NMD. If omitted: 150
+# -3 NUM     Distance (in bp) for penultimate exon NMD escape rule (3' rule).
+#            That is, PTCs within NUM bp upstream of the penultimate exon 
+#            3'-end are predicted to escape NMD. If omitted: 50
 ```
-$ ./docker_aenmd_cli.sh -p -i /my/input/file.vcf -o /my/output/file.vcf
+
+#### Using `aenmd_cli` without docker
+
+Of course it is possible to use the CLI without docker. 
+In this case, it will make use of an existing installation of `aenmd` - see [its repository]() for details.
+Also, it is not necessary to pull the docker image.
+There are two ways to use `aenmd_cli` without docker:
+
+##### Using `run_aenmd_cli.sh` without docker
+
+This is essentially the same as discussed above, just with th `-b PATH` option selected.
+
+```bash
+#- Don't use a container with the -b option
+#  (here we assume run_aenmd_cli.sh is in the current directory; i.e., PATH = './')
+./run_aenmd_cli.sh -b './' -i /my/input/file.vcf -o /my/output/file.vcf
 ```
 
+##### Using `aenmd_cli.R`
 
-### Running `aenmd_cli` without docker
+Alternatively, we can forgo `run_aenmd_cli.sh` and run `aenmd_cli.R` directly; for example:
 
-### Notes about `aenmd_cli` with docker
-
-#### -Note: This git repository is not necessary to run `aenmd_cli`:
+```bash
+./aenmd_cli.R -i /my/input/file.vcf  \
+              -o /my/output/file.vcf \
+              -3 50                  \
+              -5 150                 \
 ```
+
+#### Notes about `aenmd_cli` with docker
+
+##### Running `aenmd_cli.R` directly:
+
+Running `run_aenmd_cli.sh` is supposed to make accessing the container supplying `aenmd_cli.R` more intuitive, but it is not necessary:
+
+```bash
 #- We can interact with the container directly.
 #  (we only need the docker image here) 
 $ docker pull kostkalab/aenmd_cli
@@ -44,45 +116,57 @@ $ docker run                                                                    
     -o /aenmd/output/output.vcf
 ```
 
-#### -Note: Memory can be an issue. 
-Eespecially when running docker/podman/etc. inside a virtual machine (e.g., on a Mac using `podman` [(see here)](https://podman.io/getting-started/installation)). Below is an example how to increase memory size available to podman. 
+##### Input/output files when docker is running in a virtual machine
+
+Sometimes docker/podman run in virtual machines (e.g., Mac).
+This means that that input/output files need to be passed between three entities:
+
+`host OS <-> VM <-> Container with aenmd`
+
+For example, on the host OS we have input/output files as
+
+```bash
+host OS:
+--------
+input  = /my_proj/input/file.vcf
+output = /my_proj/output/file.vcf
 ```
-#-
-$ podman machine stop
-$ podman machine inspect | grep Memory
-$ podman machine set -m=8192
-$ podman machine inspect | grep Memory
-$ podman machine start
 
+Which could then accessible under a different path in the VM.
+For example, we might have been using `podman` like
+
+```bash
+#- make /my_proj accessible in podman
+podman machine init -v /my_proj:/mnt/MYPROJ
+```
+Then input/output files in the VM are 
+
+```bash
+VM
+--
+input  = /mnt/MYPROJ/input/file.vcf
+output = /mnt/MYPROJ/output/file.vcf
 ```
 
-#### -Note: Passing input/output files can be un-intuitive.
-That is especially then when `docker` or `podman` are running inside a virtual machine as well. Below again a podman example
+In this case, we need to inform `aenmd_cli` about the files' names in the VM:
+
+```bash
+#- Paths when docker/podman run inside a VM
+$ ./run_aenmd_cli.sh -p                  \
+                     -I /mnt/MYPROJ      \
+                     -O /mnt/MYPROJ      \
+                     -i /input/file.vcf  \
+                     -o /output/file.vcf
 ```
-#- run mount a project directory for input/output running podman
-#  we assume input:   /my/project/directory/input.vcf
-#            output:  /my/project/directory/output.vcf
 
-#- need to initialize podman machine so it can access the project directory
-$ podman machine init -v /my/project/directory:/mnt/MYVOLUME
+This will essentially result in the following command being executed:
 
-#- then pass input/output files through to podman (again)
-$ ./docker_aenmd_cli.sh -r "podman run"         \
-                        -I /mnt/MYVOLUME        \
-                        -O /mnt/MYVOLUME        \
-                        -i /path/to/input.vcf   \
-                        -o /path/to/output.vcf
-
-#- or directly (instead of the previous command, still need podman machine init)
-#  note the we run docker/podman here bind-mounting the directory of the VM
-$ podman run                                                                    \
-   --mount type=bind,src=/mnt/MYVOLUME/INPUT.vcf,dst=/aenmd/input/input.vcf     \       
-   --mount type=bind,src=/mnt/MYVOLUME/OUTPUT.vcf,dst=/aenmd/output/output.vcf  \   
-   aenmd_cli                                                                    \
-   -i /aenmd/input/input.vcf                                                    \
+```bash
+podman run                                                                                       \
+   --mount type=bind,readonly=true,src=/mnt/MYPROJ/input/file.vcf,dst=/aenmd/input/input.vcf     \       
+   --mount type=bind,readonle=false,src=/mnt/MYPROJ/output/file.vcf,dst=/aenmd/output/output.vcf \   
+   aenmd_cli                                                                                     \
+   -i /aenmd/input/input.vcf                                                                     \
    -o /aenmd/output/output.vcf 
-
-#- Note the docker_aenmd_cli.sh script also works with different directories for 
-#  input and output, provided they are accessible to podman/docker
 ```
 

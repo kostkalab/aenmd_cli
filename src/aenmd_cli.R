@@ -67,8 +67,10 @@ if ( clargs$verbose ) {
 } 
 
 #- read in VCF without the genotypes
-vcf <- VariantAnnotation::readVcf(clargs$input, param = VariantAnnotation::ScanVcfParam(geno=NA))
-vcf <- VariantAnnotation::expand(vcf)
+vcf      <- VariantAnnotation::readVcf(clargs$input, param = VariantAnnotation::ScanVcfParam(geno=NA))
+rr_c     <- SummarizedExperiment::rowRanges(vcf)
+rr_c$sky <- paste0( seqnames(rr_c) |> as.character(), ':',  start(rr_c))
+vcf      <- VariantAnnotation::expand(vcf)
 
 #- split ranges and info
 vcf_rng <- SummarizedExperiment::rowRanges(vcf)
@@ -95,7 +97,7 @@ if ( clargs$verbose ) {
 if ( clargs$verbose ) { 
     message("Filtering variants: ", " ...",  appendLF = FALSE)
 } 
-ipt <- aenmd::process_variants(vcf_rng, verbose = FALSE, )
+ipt <- aenmd::process_variants(vcf_rng, verbose = FALSE)
 if(length(ipt) == 0){
     cli_alert('Input file does not contain variants passing the filtering process. No ouput file will be created. Quitting.')
     q(save = FALSE, runLast = FALSE)
@@ -120,7 +122,7 @@ if ( clargs$verbose ) {
 #------------------------------------------------------
 rcol <- c("is_ptc", "is_last", "is_penultimate", "is_cssProximal", "is_single", "is_407plus")
 tmp1 <- apply(opt$res_aenmd[,rcol], 1, function(x) paste(as.integer(x), collapse = ":"))
-tmp2 <- paste(opt$tx_id,tmp1, sep = "|")
+tmp2 <- paste(opt$res_aenmd[,'transcript'],tmp1, sep = "|")
 res  <- tapply(tmp2, opt$key, function(x) paste(x, collapse=","))
 
 #- prepare output VCF and write output file
@@ -131,18 +133,20 @@ vcf_out <- vcf[names(res)]
 ifo_out <- vcf_ifo[names(res),]
 ifo_out$aenmd <- res
 
+message('hu')
+
 #- header 
 #--------
 
 #- keep track of aenmd version used
 v1 <- paste0("aenmd: version ", utils::packageVersion("aenmd"))
-v2 <- paste0( aenmd:::._EA_dataPackage_name, ", version: ", utils::packageVersion(aenmd:::._EA_dataPackage_name))
+v2 <- paste0(ad_get_packagename(), ", version: ", utils::packageVersion(ad_get_packagename()))
 v3 <- paste0(v1, " with ",v2, ". Format: ")
 
 #- communicate make-up of info column for aenmd
 tmp <- VariantAnnotation::header(vcf_out)
 hdr_ifo <- tmp |> VariantAnnotation::info() |> as.data.frame()
-desc <- paste(v3, "transcript_id",paste0(opt$res_aenmd |> colnames(), collapse = ":"),sep="|")
+desc <- paste(v3, "transcript_id",paste0(rcol, collapse = ":"),sep="|")
 hdr_ifo <- rbind(hdr_ifo,c(".", "String", desc))
 #- had no info in vcf that was provided
 if(nrow(hdr_ifo)==1){
@@ -154,6 +158,10 @@ VariantAnnotation::header(vcf_out) <- tmp
 
 #- content
 VariantAnnotation::info(vcf_out) <- ifo_out
+
+
+message('hu1')
+
 
 #- determine output type
 if(stringr::str_detect(clargs$output,".gz$")){
