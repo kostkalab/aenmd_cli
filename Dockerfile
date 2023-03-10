@@ -1,7 +1,7 @@
 FROM bioconductor/bioconductor_docker:RELEASE_3_17
 
 ARG aenmd_pack=aenmd_0.3.9.tar.gz
-ARG aenmd_dat_pack=aenmd.data.gencode.v43_0.0.3.tar.gz
+ARG aenmd_dat_pack=aenmd.data.ensdb.v105_0.3.1.tar.gz
 
 #- install R dependencies
 RUN R -e 'BiocManager::install("dplyr")'    	 			        && \
@@ -25,7 +25,7 @@ RUN R -e 'BiocManager::install("dplyr")'    	 			        && \
 RUN mkdir -p /aenmd/dat
 RUN mkdir -p /aenmd/src
 COPY ./dat/$aenmd_pack     /aenmd/dat
-COPY ./dat/$aenmd_pack     /aenmd/dat
+COPY ./dat/$aenmd_dat_pack /aenmd/dat
 COPY ./src/aenmd_cli.R     /aenmd/src
 
 #-  install aenmd
