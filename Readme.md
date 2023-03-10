@@ -6,9 +6,9 @@
 - [Introduction](#introduction)
 - [Quickstart with docker](#quickstart-with-docker)
 - [Using the CLI without docker](#running-aenmd_cli-without-docker)
-- [Notes]()
-    - A
-    - B
+- [Some notes](#notes-about-aenmd_cli-with-docker)
+    - [Interacting with the container directly](#running-aenmd_clir-directly)
+    - [Input/output when docker is running in a VM](#inputoutput-files-when-docker-is-running-in-a-virtual-machine)
 #### Introduction
 
 This repository contains a simple command line interface (CLI) for the `aenmd` `R` package available [at this repository](https://github.com/kostkalab/aenmd). `aenmd` annotates variant/transcript pairs with premature termination codons with predicted escape from nonsense-mediated decay.
