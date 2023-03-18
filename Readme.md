@@ -22,7 +22,7 @@ Here we assume access to docker is configured and a vcf file `/my/input/file.vcf
 ```bash
 #- get set up
 git clone kostkalab/aenmd_cli
-docker pull kostkalab/aenmd_cli
+docker pull ghcr.io/kostkalab/aenmd_cli:v0.3.4
 
 #- run aenmd_cli via shell script
 cd aenmd_cli

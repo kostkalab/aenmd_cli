@@ -17,4 +17,4 @@ TAG=v"$VNUM12"."$VNUM3"
 git tag $TAG
 
 #- build image with updated git tag
-podman build -t aenmd:$(git tag | tail -n 1) .
+podman build -t aenmd_cli:$(git tag | tail -n 1) .
