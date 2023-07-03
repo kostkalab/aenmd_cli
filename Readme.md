@@ -21,12 +21,12 @@ Here we assume access to docker is configured and a vcf file `/my/input/file.vcf
 
 ```bash
 #- download docker image
-docker pull ghcr.io/kostkalab/aenmd_cli:v0.3.4
+docker pull ghcr.io/kostkalab/aenmd_cli:v0.3.5
 
 #- check if the aenmd_cli image has been installed
 docker image ls | grep aenmd_cli
 #- output should look something like:
-#  ghcr.io/kostkalab/aenmd_cli  v0.3.4      363f27bf0e2f  3 months ago  7.18 GB
+#  ghcr.io/kostkalab/aenmd_cli  v0.3.5    ...
 
 #- download script / example data
 #- get script to run docker image comfortably
