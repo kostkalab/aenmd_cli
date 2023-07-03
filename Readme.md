@@ -24,6 +24,10 @@ Here we assume access to docker is configured and a vcf file `/my/input/file.vcf
 git clone kostkalab/aenmd_cli
 docker pull ghcr.io/kostkalab/aenmd_cli:v0.3.4
 
+#- check aenmd_cli has been installed
+docker image ls | grep aenmd_cli
+#ghcr.io/kostkalab/aenmd_cli  v0.3.4      363f27bf0e2f  3 months ago  7.18 GB
+
 #- run aenmd_cli via shell script
 cd aenmd_cli
 ./src/run_aenmd_cli.sh -i /my/input/file.vcf -o /my/output/file.vcf

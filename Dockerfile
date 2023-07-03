@@ -1,7 +1,7 @@
 FROM bioconductor/bioconductor_docker:RELEASE_3_17
 
-ARG aenmd_pack=aenmd_0.3.9.tar.gz
-ARG aenmd_dat_pack=aenmd.data.ensdb.v105_0.3.1.tar.gz
+ARG aenmd_pack=aenmd_0.3.11.tar.gz
+ARG aenmd_dat_pack=aenmd.data.ensdb.v105_0.3.2.tar.gz
 
 #- install R dependencies
 RUN R -e 'BiocManager::install("dplyr")'    	 			        && \
