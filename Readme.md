@@ -20,17 +20,24 @@ With the CLI this can be done  without interacting with the  `R programming lang
 Here we assume access to docker is configured and a vcf file `/my/input/file.vcf` is to be analyzed using `aenmd`. Output is to be written to `/my/output/file.vcf`.
 
 ```bash
-#- get set up
-git clone kostkalab/aenmd_cli
+#- download docker image
 docker pull ghcr.io/kostkalab/aenmd_cli:v0.3.4
 
-#- check aenmd_cli has been installed
+#- check if the aenmd_cli image has been installed
 docker image ls | grep aenmd_cli
-#ghcr.io/kostkalab/aenmd_cli  v0.3.4      363f27bf0e2f  3 months ago  7.18 GB
+#- output should look something like:
+#  ghcr.io/kostkalab/aenmd_cli  v0.3.4      363f27bf0e2f  3 months ago  7.18 GB
 
-#- run aenmd_cli via shell script
+#- download script / example data
+#- get script to run docker image comfortably
+wget https://raw.githubusercontent.com/kostkalab/aenmd_cli/master/src/run_aenmd_cli.sh
+#- download input file
+wget https://raw.githubusercontent.com/kostkalab/aenmd/master/inst/extdata/clinvar_20221211_noinfo_sample1k.vcf.gz
+gunzip clinvar_20221211_noinfo_sample1k.vcf.gz
+
+#- run aenmd_cli container via shell script
 cd aenmd_cli
-./src/run_aenmd_cli.sh -i /my/input/file.vcf -o /my/output/file.vcf
+./src/run_aenmd_cli.sh -i ./clinvar_20221211_noinfo_sample1k.vcf.gz -o aenmd_output_file.vcf
 ```
 Since we are using docker, we only need one script from the repository.
 We can clean up the rest.
