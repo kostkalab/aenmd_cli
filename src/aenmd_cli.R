@@ -69,7 +69,7 @@ if ( clargs$verbose ) {
 #- read in VCF without the genotypes
 vcf      <- VariantAnnotation::readVcf(clargs$input, param = VariantAnnotation::ScanVcfParam(geno=NA))
 rr_c     <- SummarizedExperiment::rowRanges(vcf)
-rr_c$sky <- paste0( seqnames(rr_c) |> as.character(), ':',  start(rr_c))
+rr_c$sky <- paste0( GenomicRanges::seqnames(rr_c) |> as.character(), ':',  GenomicRanges::start(rr_c))
 vcf      <- VariantAnnotation::expand(vcf)
 
 #- split ranges and info
@@ -158,10 +158,6 @@ VariantAnnotation::header(vcf_out) <- tmp
 
 #- content
 VariantAnnotation::info(vcf_out) <- ifo_out
-
-
-message('hu1')
-
 
 #- determine output type
 if(stringr::str_detect(clargs$output,".gz$")){

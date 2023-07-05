@@ -6,9 +6,10 @@
 - [Introduction](#introduction)
 - [Quickstart with docker](#quickstart-with-docker)
 - [Using the CLI without docker](#running-aenmd_cli-without-docker)
-- [Some notes](#notes-about-aenmd_cli-with-docker)
+- [Notes](#notes-about-aenmd_cli-with-docker)
     - [Interacting with the container directly](#running-aenmd_clir-directly)
     - [Input/output when docker is running in a VM](#inputoutput-files-when-docker-is-running-in-a-virtual-machine)
+    - Example: `aenmd_cli` in vanilla Ubuntu 22.04
 #### Introduction
 
 This repository contains a simple command line interface (CLI) for the `aenmd` `R` package available [at this repository](https://github.com/kostkalab/aenmd). `aenmd` annotates variant/transcript pairs with premature termination codons with predicted escape from nonsense-mediated decay.
@@ -28,16 +29,15 @@ docker image ls | grep aenmd_cli
 #- output should look something like:
 #  ghcr.io/kostkalab/aenmd_cli  v0.3.5    ...
 
-#- download script / example data
-#- get script to run docker image comfortably
+#- download script to run aenmd
 wget https://raw.githubusercontent.com/kostkalab/aenmd_cli/master/src/run_aenmd_cli.sh
-#- download input file
+chmod u+x ./run_aenmd_cl.sh
+#- download input file (example vcf)
 wget https://raw.githubusercontent.com/kostkalab/aenmd/master/inst/extdata/clinvar_20221211_noinfo_sample1k.vcf.gz
 gunzip clinvar_20221211_noinfo_sample1k.vcf.gz
 
 #- run aenmd_cli container via shell script
-cd aenmd_cli
-./src/run_aenmd_cli.sh -i ./clinvar_20221211_noinfo_sample1k.vcf.gz -o aenmd_output_file.vcf
+./run_aenmd_cli.sh -i ./clinvar_20221211_noinfo_sample1k.vcf.gz -o aenmd_output_file.vcf
 ```
 Since we are using docker, we only need one script from the repository.
 We can clean up the rest.
@@ -181,3 +181,55 @@ podman run                                                                      
    -o /aenmd/output/output.vcf 
 ```
 
+##### Example: setting up aenmd_cli using vanilla Ubuntu 22.04
+
+Here we do a comprehensive setup of `aenmd_cli` starting with a vanilla Ubuntu 22.04. We have been using `podman machine` on a Mac (using 8 GB of RAM), but we hope by starting with a generic setup these instructions will be broadly useful.
+
+* Start Ubuntu 22.04
+This is not strictly necessary, we just do this to achieve a controlled environment. Note that we will be root user (inside the container) after the following command:
+```
+#- run ubuntu kinetic (privileged, since we'll run podman inside)
+$ podman run    --interactive           \
+                --tty                   \
+                --name aemnd_container  \
+                --privileged            \
+                ubuntu:22.04
+```
+
+* Next, we install some necessary tools:
+```
+$ apt-get -y update
+$ apt-get -y install podman
+$ apt-get -y install git
+$ apt-get -y install wget
+```
+
+* Next we create and change into a "regular" user named "tst"
+```
+$ adduser --disabled-password --gecos "" tst
+$ su tst
+$ cd
+``` 
+
+* Next, we pull the `aenmd_cli` container image
+```
+$ podman pull ghcr.io/kostkalab/aenmd_cli:v0.3.5
+$ podman image ls | grep aenmd_cli #- should find it
+```
+
+* Next, we get the script to run `aenmd_cli` comfortably from the command line
+```
+$ wget https://raw.githubusercontent.com/kostkalab/aenmd_cli/master/src/run_aenmd_cli.sh
+$ chmod u+x ./run_aenmd_cli.sh
+```
+
+* Next, we download an example `vcf` file from the `aenmd` GitHub repository
+```
+$ wget https://raw.githubusercontent.com/kostkalab/aenmd/master/inst/extdata/clinvar_20221211_noinfo_sample1k.vcf.gz
+```
+
+* Finally, we run `aenmd` using the container image we pulled from the GitHub container registry:
+```
+$ ./run_aenmd_cli.sh -p -i ./clinvar_20221211_noinfo_sample1k.vcf.gz -o aenmd_output_file.vcf
+
+```

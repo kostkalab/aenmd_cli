@@ -115,7 +115,7 @@ case "$opt_file" in
 *.vcf.gz )
         cnt_opt_file="output.vcf.gz"
         cnt_ipt_file="input"."${ipt_file##*.}"
-        echo $run_cmnd                                                                       \
+        $run_cmnd                                                                       \
           --mount type=bind,readonly=true,src=$vm_ipt_file,dst=/aenmd/input/$cnt_ipt_file    \
           --mount type=bind,readonly=false,src=$vm_opt_file,dst=/aenmd/output/$cnt_opt_file  \
           aenmd_cli                                                                          \
@@ -133,7 +133,7 @@ case "$opt_file" in
         chmod a+w ${opt_file%*.bgz}
         cnt_opt_file="output.vcf.bgz"
         cnt_ipt_file="input"."${ipt_file##*.}"
-        echo $run_cmnd                                                                                      \
+        $run_cmnd                                                                                      \
           --mount type=bind,readonly=true,src=$vm_ipt_file,dst=/aenmd/input/$cnt_ipt_file                   \
           --mount type=bind,readonly=false,src=$vm_opt_file,dst=/aenmd/output/$cnt_opt_file                 \
           --mount type=bind,readonly=false,src=${vm_opt_file%*.bgz},dst=/aenmd/output/${cnt_opt_file%*.bgz} \
@@ -149,7 +149,7 @@ case "$opt_file" in
 *.vcf )
         cnt_opt_file="output.vcf"
         cnt_ipt_file="input"."${ipt_file##*.}"
-        echo $run_cmnd                                                                       \
+        $run_cmnd                                                                       \
           --mount type=bind,readonly=true,src=$vm_ipt_file,dst=/aenmd/input/$cnt_ipt_file    \
           --mount type=bind,readonly=false,src=$vm_opt_file,dst=/aenmd/output/$cnt_opt_file  \
           aenmd_cli                                                                          \
