@@ -133,7 +133,6 @@ vcf_out <- vcf[names(res)]
 ifo_out <- vcf_ifo[names(res),]
 ifo_out$aenmd <- res
 
-message('hu')
 
 #- header 
 #--------

@@ -23,4 +23,5 @@ podman build -t aenmd_cli:$(git tag | tail -n 1) .
 podman tag aenmd_cli:$(git tag | tail -n 1) ghcr.io/kostkalab/aenmd_cli:$(git tag | tail -n 1)
 
 #- update ghcr with the new image
+podman login ghcr.io/kostkalab
 podman push ghcr.io/kostkalab/aenmd_cli:$(git tag | tail -n 1)
