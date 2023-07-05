@@ -22,12 +22,12 @@ Here we assume access to docker is configured and a vcf file `/my/input/file.vcf
 
 ```bash
 #- download docker image
-docker pull ghcr.io/kostkalab/aenmd_cli:v0.3.5
+docker pull ghcr.io/kostkalab/aenmd_cli:v0.3.6
 
 #- check if the aenmd_cli image has been installed
 docker image ls | grep aenmd_cli
 #- output should look something like:
-#  ghcr.io/kostkalab/aenmd_cli  v0.3.5    ...
+#  ghcr.io/kostkalab/aenmd_cli  v0.3.6    ...
 
 #- download script to run aenmd
 wget https://raw.githubusercontent.com/kostkalab/aenmd_cli/master/src/run_aenmd_cli.sh
@@ -213,7 +213,7 @@ $ cd
 
 * Next, we pull the `aenmd_cli` container image
 ```
-$ podman pull ghcr.io/kostkalab/aenmd_cli:v0.3.5
+$ podman pull ghcr.io/kostkalab/aenmd_cli:v0.3.6
 $ podman image ls | grep aenmd_cli #- should find it
 ```
 
@@ -230,6 +230,6 @@ $ wget https://raw.githubusercontent.com/kostkalab/aenmd/master/inst/extdata/cli
 
 * Finally, we run `aenmd` using the container image we pulled from the GitHub container registry:
 ```
-$ ./run_aenmd_cli.sh -p -i ./clinvar_20221211_noinfo_sample1k.vcf.gz -o aenmd_output_file.vcf
+$ 
 
 ```
