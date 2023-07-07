@@ -37,7 +37,7 @@ wget https://raw.githubusercontent.com/kostkalab/aenmd/master/inst/extdata/clinv
 gunzip clinvar_20221211_noinfo_sample1k.vcf.gz
 
 #- run aenmd_cli container via shell script
-./run_aenmd_cli.sh -i ./clinvar_20221211_noinfo_sample1k.vcf.gz -o aenmd_output_file.vcf
+./run_aenmd_cli.sh -i ./clinvar_20221211_noinfo_sample1k.vcf -o aenmd_output_file.vcf
 ```
 Since we are using docker, we only need one script from the repository.
 We can clean up the rest.
