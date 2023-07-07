@@ -5,6 +5,9 @@
 # from inside its docker container.
 #==========================================
 
+#- image string for aenmd_cli container at ghcr.io
+IMG_STR="ghcr.io/kostkalab/aenmd_cli:v0.3.7"
+
 #- option parsin (getopts)
 #-------------------------
 
@@ -115,10 +118,10 @@ case "$opt_file" in
 *.vcf.gz )
         cnt_opt_file="output.vcf.gz"
         cnt_ipt_file="input"."${ipt_file##*.}"
-        $run_cmnd                                                                       \
+        $run_cmnd                                                                            \
           --mount type=bind,readonly=true,src=$vm_ipt_file,dst=/aenmd/input/$cnt_ipt_file    \
           --mount type=bind,readonly=false,src=$vm_opt_file,dst=/aenmd/output/$cnt_opt_file  \
-          aenmd_cli                                                                          \
+          $IMG_STR                                                                           \
           -i /aenmd/input/$cnt_ipt_file                                                      \
           -o /aenmd/output/$cnt_opt_file                                                     \
           -5 $dist_5                                                                         \
@@ -133,12 +136,12 @@ case "$opt_file" in
         chmod a+w ${opt_file%*.bgz}
         cnt_opt_file="output.vcf.bgz"
         cnt_ipt_file="input"."${ipt_file##*.}"
-        $run_cmnd                                                                                      \
+        $run_cmnd                                                                                           \
           --mount type=bind,readonly=true,src=$vm_ipt_file,dst=/aenmd/input/$cnt_ipt_file                   \
           --mount type=bind,readonly=false,src=$vm_opt_file,dst=/aenmd/output/$cnt_opt_file                 \
           --mount type=bind,readonly=false,src=${vm_opt_file%*.bgz},dst=/aenmd/output/${cnt_opt_file%*.bgz} \
           --mount type=bind,readonly=false,src=$vm_opt_file.tbi,dst=/aenmd/output/$cnt_opt_file.tbi         \
-          aenmd_cli                                                                                         \
+          $IMG_STR                                                                                          \
           -i /aenmd/input/$cnt_ipt_file                                                                     \
           -o /aenmd/output/$cnt_opt_file                                                                    \
           -5 $dist_5                                                                                        \
@@ -149,10 +152,10 @@ case "$opt_file" in
 *.vcf )
         cnt_opt_file="output.vcf"
         cnt_ipt_file="input"."${ipt_file##*.}"
-        $run_cmnd                                                                       \
+        $run_cmnd                                                                            \
           --mount type=bind,readonly=true,src=$vm_ipt_file,dst=/aenmd/input/$cnt_ipt_file    \
           --mount type=bind,readonly=false,src=$vm_opt_file,dst=/aenmd/output/$cnt_opt_file  \
-          aenmd_cli                                                                          \
+          $IMG_STR                                                                           \
           -i /aenmd/input/$cnt_ipt_file                                                      \
           -o /aenmd/output/$cnt_opt_file                                                     \
           -5 $dist_5                                                                         \
@@ -168,17 +171,3 @@ esac
 #- remove write access from output
 #---------------------------------
 chmod a-w $opt_file
-
-#$run_cmnd                                                                          \
-#    --mount type=bind,readonly=true,src=$ipt_file,dst=/aenmd/input/$my_ipt_file    \
-#    --mount type=bind,readonly=false,src=$opt_file,dst=/aenmd/output/$my_opt_file  \
-#    aenmd_cli                                                                      \
-#    -i /aenmd/$my_ipt_file                                                         \
-#    -o /aenmd/$my_opt_file
-
-
-#./docker_aenmd_cli.sh -r "podman run"
-#                   -i /mnt/myvol/gnomad-chr21_sample.vcf
-#                   -o /mnt/myvol/tst.vcf
-
-#./docker_aenmd_cli.sh -r "podman run" -I /mnt/myvol -i gnomad-chr21_sample.vcf -O /mnt/myvol -o ./tst.vcf.bgz
